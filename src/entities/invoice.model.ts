@@ -1,3 +1,5 @@
+import { Column, Entity, PrimaryColumn } from 'typeorm'
+
 export interface IInvoiceProps {
   invoiceNum: string
   date: Date
@@ -9,23 +11,34 @@ const setPrintNum = (num: string, date: Date): string => {
   const yearStr = date.getFullYear().toString().substring(2)
   return res + numberStr + '/' + yearStr
 }
-
+@Entity()
 export class Invoice {
+  @PrimaryColumn()
   printNum: string
+
+  @Column()
   invoiceNum: string
+
+  @Column()
   date: Date
+
+  @Column()
   orderNum: string
 
   constructor({ invoiceNum, date, orderNum }: IInvoiceProps) {
-    this.printNum = setPrintNum(invoiceNum, date)
-    this.invoiceNum = invoiceNum
-    this.orderNum = orderNum
-    this.date = date
+    if (invoiceNum && date && orderNum) {
+      this.printNum = setPrintNum(invoiceNum, date)
+      this.invoiceNum = invoiceNum || 'invalid invoice num'
+      this.orderNum = orderNum
+      this.date = date
+    } else {
+      throw new Error('Invalid Invoice properties!')
+    }
   }
 
   static createMany(data: Array<IInvoiceProps>): Invoice[] {
     return data
-      .filter(data => data != null && data.hasOwnProperty('invoiceNum'))
+      .filter(i => i && i?.invoiceNum && i?.date && i?.orderNum)
       .map(
         i =>
           new Invoice({

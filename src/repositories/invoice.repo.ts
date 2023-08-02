@@ -1,25 +1,25 @@
-import { Invoice } from '../models/invoice.model'
-import { prismaDB } from '../datasource/dbConnection'
-import { PrismaClient } from '@prisma/client'
+import { Invoice } from '../entities/invoice.model'
+import { dataSource } from '../data-source'
+import { Repository } from 'typeorm'
 
 class InvoiceRepository {
-  constructor(private prismaDB: PrismaClient) {}
+  repo: Repository<Invoice>
+
+  constructor(
+    public datasource: typeof dataSource,
+    public InvoiceModel: typeof Invoice
+  ) {
+    this.repo = datasource.getRepository(InvoiceModel)
+  }
 
   async create(data: Invoice[]) {
     try {
-      const savedInvoices = data.map(
-        async invoice =>
-          await prismaDB.invoice.upsert({
-            where: { printNum: invoice.printNum },
-            update: invoice,
-            create: invoice,
-          })
-      )
-      return savedInvoices
+      const res = await this.repo.upsert(data, ['printNum'])
+      return res
     } catch (err) {
       console.log(err)
     }
   }
 }
 
-export const InvoiceRepo = new InvoiceRepository(prismaDB)
+export const InvoiceRepo = new InvoiceRepository(dataSource, Invoice)

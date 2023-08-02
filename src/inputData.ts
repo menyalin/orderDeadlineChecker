@@ -1,34 +1,29 @@
-import './datasource/dbConnection'
-import XLSX from 'xlsx'
-import { Invoice, IInvoiceProps } from './models/invoice.model'
+import { readFile } from './fileReader/fileReader'
+import { Invoice, IInvoiceProps } from './entities/invoice.model'
 import { InvoiceRepo } from './repositories/invoice.repo'
-import { WmsOrder } from './models/wmsorder.model'
-const inputDataResource = [
-  { file: './input_data/invoices.xlsx', model: Invoice, repo: InvoiceRepo },
-  // { file: './input_data/wmsOrders.xlsx', model: WmsOrder, repo: WmsOrderRepo }
-]
+import { IWmsOrderProps, WmsOrder } from './entities/wmsorder.model'
+import { WmsOrderRepo } from './repositories/wmsOrder.repo'
+import { dataSource } from './data-source'
 
-try {
-  inputDataResource.forEach(resource => {
-    const wb = XLSX.readFile(resource.file, {
-      cellDates: true,
-    })
-    const sheet = wb.Sheets[wb.SheetNames[0]]
-    const data = XLSX.utils.sheet_to_json(sheet)
+async function storeData() {
+  // const invoiceData = readFile<IInvoiceProps>('./input_data/invoices.xlsx')
+  // const invoices = Invoice.createMany(invoiceData)
 
-    const items = resource.model.createMany(data)
+  // const wmsOrdersData = readFile<IWmsOrderProps>('./input_data/wmsOrders.xlsx')
+  // const wmsOrders = WmsOrder.createMany(wmsOrdersData)
+  try {
+    await dataSource.initialize()
+    console.log('db connected')
+  } catch (e) {
+    console.log('db connection error', e)
+  }
+  // InvoiceRepo.create(invoices)
+  //   .then(() => console.log('Реализации успешно загружены'))
+  //   .catch(err => console.log('Ошибка загрузки реализаций', err))
 
-    resource.repo
-      .create(items)
-      .then(() => {
-        console.log(`записи из файла ${resource.file} загружены в БД`)
-      })
-      .catch(err => {
-        console.log('Ошибка записи в БД')
-        console.log(err)
-      })
-  })
-} catch (err) {
-  // Если произошла ошибка при чтении файла, выводим ее в консоль
-  console.error('Ошибка при чтении файла:', err)
+  // WmsOrderRepo.create(wmsOrders)
+  //   .then(() => console.log('WMS-заказы успешно загружены'))
+  //   .catch(err => console.log('Ошибка загрузки WMS-заказов', err))
 }
+
+storeData()
