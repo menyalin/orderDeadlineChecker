@@ -1,7 +1,5 @@
-import 'reflect-metadata'
 import { DataSource } from 'typeorm'
-import { Invoice } from './entities/invoice.model'
-import { WmsOrder } from './entities/wmsorder.model'
+import { Invoice, WmsOrder, DOOrder } from './entities'
 
 export const dataSource = new DataSource({
   type: 'postgres',
@@ -10,6 +8,6 @@ export const dataSource = new DataSource({
   username: 'postgres',
   password: 'postgres',
   database: 'orders',
-  entities: [Invoice, WmsOrder],
+  entities: [Invoice, WmsOrder, DOOrder],
   synchronize: true,
 })

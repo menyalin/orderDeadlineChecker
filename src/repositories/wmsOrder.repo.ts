@@ -1,4 +1,4 @@
-import { WmsOrder } from '../entities/wmsorder.model'
+import { WmsOrder } from '../entities'
 import { dataSource } from '../data-source'
 import { Repository } from 'typeorm'
 
@@ -14,10 +14,11 @@ class WmsOrderRepository {
 
   async create(data: WmsOrder[]) {
     try {
-      const res = await this.repo.upsert(data, ['printNum'])
+      const res = await this.repo.upsert(data, ['orderNum'])
       return res
     } catch (err) {
       console.log(err)
+      throw new Error('error in wmsOrder repo!!')
     }
   }
 }

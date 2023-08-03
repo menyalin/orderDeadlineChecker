@@ -18,6 +18,7 @@ const setDate = (
     throw new Error(`orderNum: ${orderNum} - date is invalid: ${inputDate}`)
   return inputDate instanceof Date ? inputDate : new Date(inputDate)
 }
+
 @Entity()
 export class WmsOrder {
   @PrimaryColumn()
@@ -26,24 +27,19 @@ export class WmsOrder {
   @Column()
   date: Date
 
-  @Column({ nullable: true })
-  acceptedWMSDate?: Date | null
+  @Column()
+  acceptedWMSDate: Date
 
-  @Column({ nullable: true })
-  searchTSDate?: Date | null
+  @Column()
+  searchTSDate: Date
 
-  constructor({
-    acceptedWMSDate,
-    searchTSDate,
-    date,
-    orderNum,
-  }: IWmsOrderProps) {
-    if (!date)
-      throw new Error(`orderNum: ${orderNum} - date is invalid: ${date}`)
-    this.acceptedWMSDate = setDate(orderNum, acceptedWMSDate)
-    this.searchTSDate = setDate(orderNum, searchTSDate)
-    this.orderNum = orderNum
-    this.date = setDate(orderNum, date) as Date
+  constructor(prop: IWmsOrderProps) {
+    if (prop) {
+      this.orderNum = prop.orderNum
+      this.date = setDate(prop.orderNum, prop.date) as Date
+      this.acceptedWMSDate = setDate(prop.orderNum, prop.acceptedWMSDate)
+      this.searchTSDate = prop.searchTSDate || this.date
+    }
   }
 
   static createMany(data: Array<IWmsOrderProps>): WmsOrder[] {

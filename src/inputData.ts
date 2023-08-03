@@ -1,29 +1,38 @@
-import { readFile } from './fileReader/fileReader'
-import { Invoice, IInvoiceProps } from './entities/invoice.model'
-import { InvoiceRepo } from './repositories/invoice.repo'
-import { IWmsOrderProps, WmsOrder } from './entities/wmsorder.model'
-import { WmsOrderRepo } from './repositories/wmsOrder.repo'
 import { dataSource } from './data-source'
+import { readFile } from './fileHandlers/fileReader'
+import {
+  Invoice,
+  IInvoiceProps,
+  IDOOrderProps,
+  DOOrder,
+  IWmsOrderProps,
+  WmsOrder,
+} from './entities'
+import { InvoiceRepo, WmsOrderRepo, DOOrderRepo } from './repositories'
 
 async function storeData() {
-  // const invoiceData = readFile<IInvoiceProps>('./input_data/invoices.xlsx')
-  // const invoices = Invoice.createMany(invoiceData)
+  await dataSource.initialize()
 
-  // const wmsOrdersData = readFile<IWmsOrderProps>('./input_data/wmsOrders.xlsx')
-  // const wmsOrders = WmsOrder.createMany(wmsOrdersData)
-  try {
-    await dataSource.initialize()
-    console.log('db connected')
-  } catch (e) {
-    console.log('db connection error', e)
-  }
-  // InvoiceRepo.create(invoices)
-  //   .then(() => console.log('Реализации успешно загружены'))
-  //   .catch(err => console.log('Ошибка загрузки реализаций', err))
+  const invoiceData = readFile<IInvoiceProps>('./input_data/invoices.xlsx')
+  const invoices = Invoice.createMany(invoiceData)
 
-  // WmsOrderRepo.create(wmsOrders)
-  //   .then(() => console.log('WMS-заказы успешно загружены'))
-  //   .catch(err => console.log('Ошибка загрузки WMS-заказов', err))
+  const wmsOrdersData = readFile<IWmsOrderProps>('./input_data/wmsOrders2.xlsx')
+  const wmsOrders = WmsOrder.createMany(wmsOrdersData)
+
+  const doOrdersData = readFile<IDOOrderProps>('./input_data/do2.xlsx')
+  const doOrders = DOOrder.createMany(doOrdersData)
+
+  InvoiceRepo.create(invoices)
+    .then(() => console.log('Реализации успешно загружены'))
+    .catch(err => console.log('Ошибка загрузки реализаций', err))
+
+  WmsOrderRepo.create(wmsOrders)
+    .then(() => console.log('WMS-заказы успешно загружены'))
+    .catch(err => console.log('Ошибка загрузки WMS-заказов', err))
+
+  DOOrderRepo.create(doOrders)
+    .then(() => console.log('ДО-заказы успешно загружены'))
+    .catch(err => console.log('Ошибка загрузки ДО-заказов', err))
 }
 
 storeData()

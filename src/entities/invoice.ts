@@ -17,7 +17,7 @@ export class Invoice {
   printNum: string
 
   @Column()
-  invoiceNum: string
+  invoiceNum?: string
 
   @Column()
   date: Date
@@ -25,14 +25,16 @@ export class Invoice {
   @Column()
   orderNum: string
 
-  constructor({ invoiceNum, date, orderNum }: IInvoiceProps) {
-    if (invoiceNum && date && orderNum) {
-      this.printNum = setPrintNum(invoiceNum, date)
-      this.invoiceNum = invoiceNum || 'invalid invoice num'
-      this.orderNum = orderNum
-      this.date = date
-    } else {
-      throw new Error('Invalid Invoice properties!')
+  constructor(prop: IInvoiceProps) {
+    if (prop) {
+      if (prop?.invoiceNum && prop?.date && prop?.orderNum) {
+        this.printNum = setPrintNum(prop.invoiceNum, prop.date)
+        this.invoiceNum = prop.invoiceNum || 'invalid invoice num'
+        this.orderNum = prop.orderNum
+        this.date = prop.date
+      } else {
+        throw new Error('Invalid Invoice properties!')
+      }
     }
   }
 

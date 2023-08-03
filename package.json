@@ -6,9 +6,11 @@
     "test": "jest",
     "format": "prettier --write \"**/*.+(js|ts|json)\"",
     "input": "ts-node src/inputData.ts",
-    "start": "ts-node src/index.ts",
+    "getdata": "ts-node src/getAnalitics.ts",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
-    "schema:sync": "npm run typeorm -- schema:sync -d src/data-source.ts"
+    "schema:sync": "npm run typeorm -- schema:sync -d src/data-source.ts",
+    "schema:drop": "npm run typeorm -- schema:drop -d src/data-source.ts",
+    "cache:clear": "npm run typeorm -- cache:clear -d src/data-source.ts"
   },
   "author": "",
   "license": "ISC",
