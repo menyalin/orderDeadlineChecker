@@ -31,7 +31,7 @@ const getTSSearchStatus = (
 
   if (dayjs(invoiceDate).isSame(searchTSDate, 'day'))
     return tsSearchStatus.inDay
-  const nextDayBefore12 = dayjs(targetDate).add(12, 'hours')
+  const nextDayBefore12 = dayjs(targetDate).endOf('d').add(12, 'h')
   if (nextDayBefore12.isSameOrAfter(searchTSDate, 'hour'))
     return tsSearchStatus.nextDayBefore12
   else return tsSearchStatus.nextDayAfter12
