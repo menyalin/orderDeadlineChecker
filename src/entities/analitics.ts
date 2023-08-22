@@ -22,6 +22,33 @@ const getNormalTSSearchDate = (invoiceDate: Date, dayOfWeek: number): Date => {
   return targetDate.toDate()
 }
 
+const getNormalDODate = (invoiceDate: Date, dayOfWeek: number): Date => {
+  let targetDate: Dayjs
+
+  targetDate = dayjs(invoiceDate)
+    .startOf('day')
+    .subtract(dayOfWeek === 1 ? 2 : 1, 'day') // Если отгрузка в ПН, то смещение на 2 дня
+    .add(8, 'hour')
+
+  return targetDate.toDate()
+}
+const getDOAcceptStatus = (
+  targetDate: Date,
+  invoiceDate: Date,
+  do_acceptedDODate?: Date
+): doAcceptStatus => {
+  if (!do_acceptedDODate) return doAcceptStatus.missing
+
+  if (targetDate >= do_acceptedDODate) return doAcceptStatus.inTime
+
+  if (dayjs(invoiceDate).isSame(do_acceptedDODate, 'day'))
+    return doAcceptStatus.inDay
+
+  if (dayjs(targetDate).add(4, 'hour').isAfter(do_acceptedDODate))
+    return doAcceptStatus.before12
+  else return doAcceptStatus.after12
+}
+
 const getTSSearchStatus = (
   targetDate: Date,
   searchTSDate: Date,
@@ -53,6 +80,14 @@ export enum tsSearchStatus {
   inDay = 'День в день',
 }
 
+export enum doAcceptStatus {
+  missing = 'Отсутствует',
+  inTime = 'Норма',
+  before12 = 'До 12 в день подборки',
+  after12 = 'После 12 в день подборки',
+  inDay = 'День в день',
+}
+
 export class AnaliticItem {
   printNum: string
   invoiceNum: string
@@ -63,7 +98,9 @@ export class AnaliticItem {
   acceptedDODate?: Date
   saleDayNumber: number
   normalTSSearchDate: Date
+  normalDODate: Date
   tsSearchStatus: tsSearchStatus
+  doAcceptStatus: doAcceptStatus
 
   constructor(prop: IAnaliticProps) {
     this.printNum = prop.invoice_printNum
@@ -78,10 +115,17 @@ export class AnaliticItem {
       this.date,
       this.saleDayNumber
     )
+    this.normalDODate = getNormalDODate(this.date, this.saleDayNumber)
+
     this.tsSearchStatus = getTSSearchStatus(
       this.normalTSSearchDate,
       this.searchTSDate,
       this.date
+    )
+    this.doAcceptStatus = getDOAcceptStatus(
+      this.normalDODate,
+      this.date,
+      this.acceptedDODate
     )
   }
 }
