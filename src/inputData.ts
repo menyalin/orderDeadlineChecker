@@ -16,10 +16,10 @@ async function storeData() {
   const invoiceData = readFile<IInvoiceProps>('./input_data/invoices.xlsx')
   const invoices = Invoice.createMany(invoiceData)
 
-  const wmsOrdersData = readFile<IWmsOrderProps>('./input_data/wmsOrders2.xlsx')
+  const wmsOrdersData = readFile<IWmsOrderProps>('./input_data/wmsOrders.xlsx')
   const wmsOrders = WmsOrder.createMany(wmsOrdersData)
 
-  const doOrdersData = readFile<IDOOrderProps>('./input_data/do2.xlsx')
+  const doOrdersData = readFile<IDOOrderProps>('./input_data/do.xlsx')
   const doOrders = DOOrder.createMany(doOrdersData)
 
   InvoiceRepo.create(invoices)
